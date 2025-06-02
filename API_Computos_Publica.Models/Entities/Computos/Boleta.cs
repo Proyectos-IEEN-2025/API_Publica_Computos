@@ -43,13 +43,14 @@ namespace API_Computos_Publica.Models.Entities.Computos
         public bool? Is_Nulo_8 { get; set; }
         public string? Candidato_4 { get; set; }
         public bool? Is_Nulo_9 { get; set; }
-        public int? NO_Capturas { get; set; } = 0;
-        public bool? Finalizada { get; set; } = false;
-        public bool? Adicional { get; set; } = false;
+        public int? NO_Capturas { get; set; }
+        public bool? Finalizada { get; set; } 
+        public bool? Adicional { get; set; }
+        public bool? Adicional_JAO { get; set; }
         public string? Captura1 { get; set; }
         public string? Captura2 { get; set; }
         public string? Captura3 { get; set; }
-        public bool? Inconsistencia { get; set; } = false;
+        public bool? Inconsistencia { get; set; } 
         public Inconsistencias? Tipo_Inconsistencia { get; set; }
 
         [ForeignKey(nameof(Tipo_Eleccion_Id))]

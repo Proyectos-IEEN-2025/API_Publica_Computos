@@ -25,18 +25,18 @@ namespace API_Computos_Publica.Data.Repository.Interfacez
           Expression<Func<T, bool>>? filter = null,
           Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
            Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null,
-           bool asNoTracking = false);
+           bool asNoTracking = true);
 
         T GetFirstOrdefault(
            Expression<Func<T, bool>>? filter = null,
           Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null,
-          bool asNoTracking = false
+          bool asNoTracking = true
        );
 
         Task<T> GetFirstOrdefaultAsync(
             Expression<Func<T, bool>>? filter = null,
            Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null,
-           bool asNoTracking = false
+           bool asNoTracking = true
         );
 
         void Add(T entity);

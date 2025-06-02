@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using API_Computos_Publica.Models.Entities.Configuracion;
 using API_Computos_Publica.Models.System;
+using API_Computos_Publica.Models.Entities.Configuracion;
+using API_Computos_Publica.Models.Entities.Computos;
 
 namespace API_Computos_Publica.Models.Entities.Computos
 {
-    public class Paquete_Tipo_Eleccion : Auditoria
+    public class Paquete_Tipo_Eleccion_Adicional : Auditoria
     {
         [Key]
         public int Id { get; set; }
@@ -30,9 +31,7 @@ namespace API_Computos_Publica.Models.Entities.Computos
         public string? Acta_Url_Local { get; set; }
         public string? Content_Type { get; set; }
         public string? File_Name { get; set; }
-        public int? Boletas_Adicionales_JAO { get; set; } = 0;
-        public int? Boletas_Adicionales_Estatal { get; set; } = 0;
-
+        public bool? Jao { get; set; } = false;
         public DateTime? Fecha_Impresion { get; set; }
         public DateTime? Fecha_Cotejo { get; set; }
         public DateTime? Fecha_Publicacion { get; set; }
@@ -40,6 +39,6 @@ namespace API_Computos_Publica.Models.Entities.Computos
         public Paquete? Paquete { get; set; }
         [ForeignKey(nameof(Tipo_Eleccion_Id))]
         public Tipo_Eleccion? Tipo_Eleccion { get; set; }
-        public IEnumerable<Candidatos_Tipo_Eleccion>? Candidatos_Votos { get; set; }
+        public IEnumerable<Candidatos_Tipo_Eleccion_Adicional>? Candidatos_Votos { get; set; }
     }
 }

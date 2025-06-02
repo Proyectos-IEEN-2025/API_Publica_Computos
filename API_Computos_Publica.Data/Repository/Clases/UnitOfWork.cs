@@ -36,7 +36,9 @@ namespace API_Computos_Publica.Data.Repository.Clases
             Boleta = new Boleta_Repository(_db);
             Paquete = new Paquete_Repository(_db);
             Paquete_Tipo_Eleccion = new Paquete_Tipo_Eleccion_Repository(_db);
+            Paquete_Tipo_Eleccion_Adicional = new Paquete_Tipo_Eleccion_Adicional_Repository(db);
             Candidato_Tipo_Eleccion = new Candidato_Tipo_Eleccion_Repository(_db);
+            Candidato_Tipo_Eleccion_Adicional = new Candidato_Tipo_Eleccion_Adicional_Repository(db);
             Acta_Estatal = new Acta_Estatal_Repository(_db);
             Acta_Parcial = new Acta_Parcial_Repository(_db);
             #endregion
@@ -66,7 +68,11 @@ namespace API_Computos_Publica.Data.Repository.Clases
 
         public IPaquete_Tipo_Eleccion_Repository Paquete_Tipo_Eleccion { get; private set; }
 
+        public IPaquete_Tipo_Eleccion_Adicional_Repository Paquete_Tipo_Eleccion_Adicional { get; private set; }
+
         public ICandidato_Tipo_Eleccion_Repository Candidato_Tipo_Eleccion { get; private set; }
+
+        public ICandidato_Tipo_Eleccion_Adicional_Repository Candidato_Tipo_Eleccion_Adicional { get; private set; }
 
         public IActa_Estatal_Repository Acta_Estatal { get; private set; }
 

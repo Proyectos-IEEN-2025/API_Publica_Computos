@@ -32,7 +32,7 @@ namespace API_Computos_Publica.Controllers.Confguracion
         {
             try
             {
-                var Municipios = await _ctx.Municipio.GetAllasync();
+                var Municipios = await _ctx.Municipio.GetAllasync(x => x.Estado.Nombre == "Nayarit", include: source => source.Include(x => x.Estado));
                 var Municipios_DTO = _mapper.Map<IEnumerable<Municipio_DTO>>(Municipios);
                 return Ok(new { success = true, data = Municipios_DTO });
             }
@@ -98,7 +98,7 @@ namespace API_Computos_Publica.Controllers.Confguracion
         {
             try
             {
-                var Municipios = await _ctx.Municipio.GetAllasync();
+                var Municipios = await _ctx.Municipio.GetAllasync(x => x.Estado.Nombre == "Nayarit", include: source => source.Include(x => x.Estado));
                 var Municipio_DTO = Municipios.Select(C => new Select_List_DTO
                 {
                     Label = C.Nombre,

@@ -33,7 +33,7 @@ namespace API_Computos_Publica.Controllers.Confguracion
         {
             try
             {
-                var Oficinas = await _ctx.Oficina.GetAllasync(include: source => source.Include(x => x.Municipio));
+                var Oficinas = await _ctx.Oficina.GetAllasync(x => x.OPLE == false, include: source => source.Include(x => x.Municipio));
                 var Oficinas_DTO = _mapper.Map<IEnumerable<Oficina_DTO>>(Oficinas);
                 Oficinas_DTO = Oficinas_DTO.OrderBy(x => x.No_Oficina);
                 return Ok(new { success = true, data = Oficinas_DTO });
@@ -66,7 +66,7 @@ namespace API_Computos_Publica.Controllers.Confguracion
         {
             try
             {
-                var Oficinas = await _ctx.Oficina.GetAllasync();
+                var Oficinas = await _ctx.Oficina.GetAllasync(x => x.OPLE == false);
                 var Oficinas_DTO = Oficinas.Select(C => new Select_List_DTO
                 {
                     Label = C.Nombre,

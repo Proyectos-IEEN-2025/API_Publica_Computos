@@ -32,16 +32,18 @@ namespace API_Computos_Publica.AutoMapper
             CreateMap<Tipo_Eleccion, Tipo_Eleccion_DTO>();
 
             CreateMap<Oficina, Oficina_DTO>()
-                .ForMember(o => o.Municipio, options => options.MapFrom(o => o.Municipio.Nombre));
+                .ForMember(o => o.Municipio, options => options.MapFrom(o => o.Municipio.Nombre))
+                .ForMember(o => o.Region, options => options.MapFrom(o => o.Municipio.Region));
 
             CreateMap<Seccion, Seccion_DTO>()
-                .ForMember(s => s.Municipio, options => options.MapFrom(s => s.Municipio.Nombre));
+                .ForMember(s => s.Municipio, options => options.MapFrom(s => s.Municipio.Nombre))
+                .ForMember(s => s.Region, options => options.MapFrom(s => s.Municipio.Region));
 
             CreateMap<Tipo_Casilla, Tipo_Casilla_DTO>();
 
             CreateMap<Candidato, Candidato_DTO>()
                 .ForMember(x => x.Tipo_Eleccion, options => options.MapFrom(x => x.Tipo_Eleccion.Nombre))
-                .ForMember(x => x.Edad, options => options.MapFrom(x => x.Fecha_Nacimiento == null ? 0 : Commons.CalcularEdad(x.Fecha_Nacimiento.Value)));
+                /*.ForMember(x => x.Edad, options => options.MapFrom(x => x.Fecha_Nacimiento == null ? 0 : Commons.CalcularEdad(x.Fecha_Nacimiento.Value)))*/;
 
             #endregion
 

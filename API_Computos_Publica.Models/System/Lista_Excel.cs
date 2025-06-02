@@ -9,6 +9,7 @@ namespace API_Computos_Publica.Models.System
     public class Lista_Excel
     {
         public int ESTADO { get; set; }
+        public int PAQUETE_ID { get; set; }
         public string NOMBRE_ESTADO { get; set; }
         public string ID_MUNICIPIO { get; set; }
         public string MUNICIPIO { get; set; }
@@ -22,5 +23,7 @@ namespace API_Computos_Publica.Models.System
         public int TOTAL_VOTOS { get; set; }
         public int LISTA_NOMINAL { get; set; }
         public string ESTATUS_ACTA { get; set; }
+        public bool Adicional { get; set; }
+        public bool Adicional_Jao { get; set; }
     }
 }

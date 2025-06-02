@@ -1,4 +1,4 @@
-using API_Computos_Publica.Data.DbContexts;
+﻿using API_Computos_Publica.Data.DbContexts;
 using API_Computos_Publica.Data.Inicializador;
 using API_Computos_Publica.Data.Repository.Clases;
 using API_Computos_Publica.Data.Repository.Interfacez;
@@ -28,7 +28,7 @@ try
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen(c =>
     {
-        c.SwaggerDoc("v1", new OpenApiInfo { Title = "API_Computos_Publica", Version = "v1" });
+        c.SwaggerDoc("v1", new OpenApiInfo { Title = "API_Computos_Publica", Version = "1.0.0" });
     });
     builder.Services.AddCors(options =>
     {
@@ -55,7 +55,7 @@ try
 
     builder.Services.AddOutputCache(opciones =>
     {
-        opciones.AddPolicy("consultas", builder => builder.Expire(TimeSpan.FromMinutes(0)).Tag("consultas"));
+        opciones.AddPolicy("consultas", builder => builder.Expire(TimeSpan.FromMinutes(15)).Tag("consultas"));
     });
 
     var app = builder.Build();

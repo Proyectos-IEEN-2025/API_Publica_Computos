@@ -30,8 +30,10 @@ namespace API_Computos_Publica.Data.DbContexts
         public DbSet<Boleta> Boletas { get; set; }//Repository//DTO//Controller
         public DbSet<Paquete> Paquetes { get; set; }//Repository//DTO//Controller
         public DbSet<Paquete_Tipo_Eleccion> Paquetes_Tipos_Elecciones { get; set; }//Repository//DTO
+        public DbSet<Paquete_Tipo_Eleccion_Adicional> Paquetes_Tipos_Elecciones_Adicionales { get; set; }
 
         public DbSet<Candidatos_Tipo_Eleccion> Candidatos_Tipos_Elecciones { get; set; }//Repository//DTO//Controller
+        public DbSet<Candidatos_Tipo_Eleccion_Adicional> Candidatos_Tipos_Elecciones_Adicionales { get; set; }
 
         public DbSet<Actas_Parciales> Actas_Parciales { get; set; }//Repository//DTO//Controller
         public DbSet<Actas_Estatales> Actas_Estatales { get; set; }//Repository//DTO//Controller
@@ -40,8 +42,6 @@ namespace API_Computos_Publica.Data.DbContexts
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Paquete>().HasQueryFilter(x => x.Eliminado != true);
-            modelBuilder.Entity<Boleta>().HasQueryFilter(x => x.Eliminado != true);
-            modelBuilder.Entity<Paquete_Tipo_Eleccion>().HasQueryFilter(x => x.Eliminado != true);
             modelBuilder.Entity<Estado>().HasQueryFilter(x => x.Eliminado != true);
             modelBuilder.Entity<Municipio>().HasQueryFilter(x => x.Eliminado != true);
             modelBuilder.Entity<Oficina>().HasQueryFilter(x => x.Eliminado != true);
@@ -50,6 +50,14 @@ namespace API_Computos_Publica.Data.DbContexts
             modelBuilder.Entity<Casilla>().HasQueryFilter(x => x.Eliminado != true);
             modelBuilder.Entity<Tipo_Eleccion>().HasQueryFilter(x => x.Eliminado != true);
             modelBuilder.Entity<Candidato>().HasQueryFilter(x => x.Eliminado != true);
+
+
+            //modelBuilder.Entity<Paquete_Tipo_Eleccion>().HasQueryFilter(x => x.Publicado == true);
+            //modelBuilder.Entity<Paquete_Tipo_Eleccion_Adicional>().HasQueryFilter(x => x.Publicado == true);
+            //modelBuilder.Entity<Candidatos_Tipo_Eleccion>().HasQueryFilter(x => x.Paquete_Tipo_Eleccion.Publicado == true);
+            //modelBuilder.Entity<Candidatos_Tipo_Eleccion_Adicional>().HasQueryFilter(x => x.Paquete_Tipo_Eleccion.Publicado == true);
+
+            modelBuilder.Entity<Boleta>().HasQueryFilter(x => x.Fecha_Modificacion != null);
             base.OnModelCreating(modelBuilder);
 
         }

@@ -32,4 +32,9 @@
     <ProjectReference Include="..\API_Computos_Publica.Utils\API_Computos_Publica.Utils.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\Votacion\Excel\" />
+    <Folder Include="wwwroot\Votacion\Zip\" />
+  </ItemGroup>
+
 </Project>

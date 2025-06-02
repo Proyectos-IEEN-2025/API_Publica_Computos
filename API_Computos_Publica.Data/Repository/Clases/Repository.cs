@@ -45,7 +45,7 @@ namespace API_Computos_Publica.Data.Repository.Clases
             return dbSet.Find(id);
         }
 
-        public IEnumerable<T> GetAll(System.Linq.Expressions.Expression<Func<T, bool>>? filter = null, Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null, Func<IQueryable<T>, Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<T, object>>? include = null, bool asNoTracking = false)
+        public IEnumerable<T> GetAll(System.Linq.Expressions.Expression<Func<T, bool>>? filter = null, Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null, Func<IQueryable<T>, Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<T, object>>? include = null, bool asNoTracking = true)
         {
             IQueryable<T> query = dbSet;
 
@@ -72,7 +72,7 @@ namespace API_Computos_Publica.Data.Repository.Clases
             return query.ToList();
         }
 
-        public async Task<IEnumerable<T>> GetAllasync(System.Linq.Expressions.Expression<Func<T, bool>>? filter = null, Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null, Func<IQueryable<T>, Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<T, object>>? include = null, bool asNoTracking = false)
+        public async Task<IEnumerable<T>> GetAllasync(System.Linq.Expressions.Expression<Func<T, bool>>? filter = null, Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null, Func<IQueryable<T>, Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<T, object>>? include = null, bool asNoTracking = true)
         {
             IQueryable<T> query = dbSet;
 
@@ -104,7 +104,7 @@ namespace API_Computos_Publica.Data.Repository.Clases
             return await dbSet.FindAsync(id);
         }
 
-        public T GetFirstOrdefault(System.Linq.Expressions.Expression<Func<T, bool>>? filter = null, Func<IQueryable<T>, Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<T, object>>? include = null, bool asNoTracking = false)
+        public T GetFirstOrdefault(System.Linq.Expressions.Expression<Func<T, bool>>? filter = null, Func<IQueryable<T>, Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<T, object>>? include = null, bool asNoTracking = true)
         {
             IQueryable<T> query = dbSet;
             if (filter != null)
@@ -125,7 +125,7 @@ namespace API_Computos_Publica.Data.Repository.Clases
             return query.FirstOrDefault();
         }
 
-        public async Task<T> GetFirstOrdefaultAsync(System.Linq.Expressions.Expression<Func<T, bool>>? filter = null, Func<IQueryable<T>, Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<T, object>>? include = null, bool asNoTracking = false)
+        public async Task<T> GetFirstOrdefaultAsync(System.Linq.Expressions.Expression<Func<T, bool>>? filter = null, Func<IQueryable<T>, Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<T, object>>? include = null, bool asNoTracking = true)
         {
             IQueryable<T> query = dbSet;
             if (filter != null)
