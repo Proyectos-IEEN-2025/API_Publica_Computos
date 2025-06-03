@@ -52,11 +52,10 @@ namespace API_Computos_Publica.Data.DbContexts
             modelBuilder.Entity<Candidato>().HasQueryFilter(x => x.Eliminado != true);
 
 
-            //modelBuilder.Entity<Paquete_Tipo_Eleccion>().HasQueryFilter(x => x.Publicado == true);
-            //modelBuilder.Entity<Paquete_Tipo_Eleccion_Adicional>().HasQueryFilter(x => x.Publicado == true);
-            //modelBuilder.Entity<Candidatos_Tipo_Eleccion>().HasQueryFilter(x => x.Paquete_Tipo_Eleccion.Publicado == true);
-            //modelBuilder.Entity<Candidatos_Tipo_Eleccion_Adicional>().HasQueryFilter(x => x.Paquete_Tipo_Eleccion.Publicado == true);
-
+            modelBuilder.Entity<Paquete_Tipo_Eleccion>().HasQueryFilter(x => x.Publicado == true);
+            modelBuilder.Entity<Paquete_Tipo_Eleccion_Adicional>().HasQueryFilter(x => x.Publicado == true);
+            modelBuilder.Entity<Candidatos_Tipo_Eleccion>().HasQueryFilter(x => x.Paquete_Tipo_Eleccion.Publicado == true);
+            modelBuilder.Entity<Candidatos_Tipo_Eleccion_Adicional>().HasQueryFilter(x => x.Paquete_Tipo_Eleccion.Publicado == true);
             modelBuilder.Entity<Boleta>().HasQueryFilter(x => x.Fecha_Modificacion != null);
             base.OnModelCreating(modelBuilder);
 

@@ -72,7 +72,7 @@ namespace API_Computos_Publica.Controllers.Confguracion
         }
 
         [HttpGet("ByJuntaAuxiliar/{TipoEleccionId:int}/{OficinaId:int}")]
-        
+        [OutputCache(PolicyName = "consultas")]
         public async Task<IActionResult> ByJuntaAuxiliar(int TipoEleccionId, int OficinaId)
         {
             try
@@ -98,8 +98,8 @@ namespace API_Computos_Publica.Controllers.Confguracion
 
                     Votos_Candidatos_Adicional = (await _ctx.Candidato_Tipo_Eleccion_Adicional.GetAllasync(x => List_Elecciones.Contains(x.Paquete_Tipo_Eleccion.Tipo_Eleccion_Id) && x.Paquete_Tipo_Eleccion.Paquete.Casilla.Municipio.Region == Oficina.Municipio.Region && x.Paquete_Tipo_Eleccion.Publicado == true, include: source => source.Include(x => x.Paquete_Tipo_Eleccion))).ToList();
 
-                    Paquete = (await _ctx.Paquete_Tipo_Eleccion.GetAllasync(x => List_Elecciones.Contains(x.Tipo_Eleccion_Id))).ToList();
-                    Paquete_adicional = (await _ctx.Paquete_Tipo_Eleccion_Adicional.GetAllasync(x => List_Elecciones.Contains(x.Tipo_Eleccion_Id))).ToList();
+                    Paquete = (await _ctx.Paquete_Tipo_Eleccion.GetAllasync(x => List_Elecciones.Contains(x.Tipo_Eleccion_Id) && x.Paquete.Casilla.Municipio.Region == Oficina.Municipio.Region)).ToList();
+                    Paquete_adicional = (await _ctx.Paquete_Tipo_Eleccion_Adicional.GetAllasync(x => List_Elecciones.Contains(x.Tipo_Eleccion_Id) && x.Paquete.Casilla.Municipio.Region == Oficina.Municipio.Region)).ToList();
                 }
                 else
                 {
@@ -108,8 +108,8 @@ namespace API_Computos_Publica.Controllers.Confguracion
 
                     Votos_Candidatos_Adicional = (await _ctx.Candidato_Tipo_Eleccion_Adicional.GetAllasync(x => x.Paquete_Tipo_Eleccion.Tipo_Eleccion_Id == TipoEleccionId && x.Paquete_Tipo_Eleccion.Paquete.Casilla.Municipio.Region == Oficina.Municipio.Region && x.Paquete_Tipo_Eleccion.Publicado == true, include: source => source.Include(x => x.Paquete_Tipo_Eleccion))).ToList();
 
-                    Paquete = (await _ctx.Paquete_Tipo_Eleccion.GetAllasync(x => x.Tipo_Eleccion_Id == TipoEleccionId)).ToList();
-                    Paquete_adicional = (await _ctx.Paquete_Tipo_Eleccion_Adicional.GetAllasync(x => x.Tipo_Eleccion_Id == TipoEleccionId)).ToList();
+                    Paquete = (await _ctx.Paquete_Tipo_Eleccion.GetAllasync(x => x.Tipo_Eleccion_Id == TipoEleccionId && x.Paquete.Casilla.Municipio.Region == Oficina.Municipio.Region)).ToList();
+                    Paquete_adicional = (await _ctx.Paquete_Tipo_Eleccion_Adicional.GetAllasync(x => x.Tipo_Eleccion_Id == TipoEleccionId && x.Paquete.Casilla.Municipio.Region == Oficina.Municipio.Region)).ToList();
                 }
 
 
@@ -125,18 +125,17 @@ namespace API_Computos_Publica.Controllers.Confguracion
                 var Votos_Nulos_Adicional = List_Elecciones.Contains(TipoEleccionId) ? (await _ctx.Paquete_Tipo_Eleccion_Adicional.GetAllasync(x => List_Elecciones.Contains(x.Tipo_Eleccion_Id) && x.Paquete.Casilla.Municipio.Region == Oficina.Municipio.Region)).Sum(x => x.Votos_Nulos) : (await _ctx.Paquete_Tipo_Eleccion_Adicional.GetAllasync(x => x.Tipo_Eleccion_Id == TipoEleccionId && x.Paquete.Casilla.Municipio.Region == Oficina.Municipio.Region)).Sum(x => x.Votos_Nulos);
 
                 Candidatos_DTO = Candidatos_DTO
-                    .Select(x =>
-                    {
-                        var candidato = Candidatos_Unicos.FirstOrDefault(c => c.Candidato_Id == x.Id);
-                        var candidatoAdicional = Candidatos_Unicos_Adicional.FirstOrDefault(c => c.Candidato_Id == x.Id);
-                        var total_Votos_candidato = candidato?.Votos ?? 0 + candidatoAdicional?.Votos ?? 0;
-
-                        x.Votos = total_Votos_candidato;
-                        x.Porcentaje = total_Votos_candidato != null ? (decimal)total_Votos_candidato / (Paquete.Sum(x => x.Total_Votos) + Paquete_adicional.Sum(x => x.Total_Votos)) : 0;
-                        x.Fotografia_URL = x.Fotografia_URL != null ? x.Fotografia_URL.Replace("http", "https").Replace("Candidatos//", "Candidatos/") : null;
-                        return x;
-                    })
-                    .ToList();
+                .Select(x =>
+                {
+                    var candidato = Candidatos_Unicos.FirstOrDefault(c => c.Candidato_Id == x.Id);
+                    var candidatoAdicional = Candidatos_Unicos_Adicional.FirstOrDefault(c => c.Candidato_Id == x.Id);
+                    var total_Votos_candidato = candidato?.Votos ?? 0 + candidatoAdicional?.Votos ?? 0;
+                    x.Porcentaje = total_Votos_candidato != null && total_Votos_candidato > 0 ? (decimal)total_Votos_candidato / Paquete.Sum(x => x.Total_Votos) + Paquete_adicional.Sum(x => x.Total_Votos) : 0;
+                    x.Votos = total_Votos_candidato;
+                    x.Fotografia_URL = x.Fotografia_URL != null ? x.Fotografia_URL.Replace("http", "https").Replace("Candidatos//", "Candidatos/") : null;
+                    return x;
+                })
+                .ToList();
 
                 return Ok(new { success = true, data = Candidatos_DTO });
             }
@@ -148,7 +147,7 @@ namespace API_Computos_Publica.Controllers.Confguracion
         }
 
         [HttpGet("ByMunicipio/{TipoEleccionId:int}/{MunicipioId:int}")]
-        
+        [OutputCache(PolicyName = "consultas")]
         public async Task<IActionResult> ByMunicipio(int TipoEleccionId, int MunicipioId)
         {
             try
@@ -173,8 +172,8 @@ namespace API_Computos_Publica.Controllers.Confguracion
 
                     Votos_Candidatos_Adicional = (await _ctx.Candidato_Tipo_Eleccion_Adicional.GetAllasync(x => List_Elecciones.Contains(x.Paquete_Tipo_Eleccion.Tipo_Eleccion_Id) && x.Paquete_Tipo_Eleccion.Paquete.Casilla.Municipio_Id == MunicipioId && x.Paquete_Tipo_Eleccion.Publicado == true, include: source => source.Include(x => x.Paquete_Tipo_Eleccion))).ToList();
 
-                    Paquete = (await _ctx.Paquete_Tipo_Eleccion.GetAllasync(x => List_Elecciones.Contains(x.Tipo_Eleccion_Id))).ToList();
-                    Paquete_adicional = (await _ctx.Paquete_Tipo_Eleccion_Adicional.GetAllasync(x => List_Elecciones.Contains(x.Tipo_Eleccion_Id))).ToList();
+                    Paquete = (await _ctx.Paquete_Tipo_Eleccion.GetAllasync(x => List_Elecciones.Contains(x.Tipo_Eleccion_Id) && x.Paquete.Casilla.Municipio_Id == MunicipioId)).ToList();
+                    Paquete_adicional = (await _ctx.Paquete_Tipo_Eleccion_Adicional.GetAllasync(x => List_Elecciones.Contains(x.Tipo_Eleccion_Id) && x.Paquete.Casilla.Municipio_Id == MunicipioId)).ToList();
                 }
                 else
                 {
@@ -183,8 +182,8 @@ namespace API_Computos_Publica.Controllers.Confguracion
 
                     Votos_Candidatos_Adicional = (await _ctx.Candidato_Tipo_Eleccion_Adicional.GetAllasync(x => x.Paquete_Tipo_Eleccion.Tipo_Eleccion_Id == TipoEleccionId && x.Paquete_Tipo_Eleccion.Paquete.Casilla.Municipio_Id == MunicipioId && x.Paquete_Tipo_Eleccion.Publicado == true, include: source => source.Include(x => x.Paquete_Tipo_Eleccion))).ToList();
 
-                    Paquete = (await _ctx.Paquete_Tipo_Eleccion.GetAllasync(x => x.Tipo_Eleccion_Id == TipoEleccionId)).ToList();
-                    Paquete_adicional = (await _ctx.Paquete_Tipo_Eleccion_Adicional.GetAllasync(x => x.Tipo_Eleccion_Id == TipoEleccionId)).ToList();
+                    Paquete = (await _ctx.Paquete_Tipo_Eleccion.GetAllasync(x => x.Tipo_Eleccion_Id == TipoEleccionId && x.Paquete.Casilla.Municipio_Id == MunicipioId)).ToList();
+                    Paquete_adicional = (await _ctx.Paquete_Tipo_Eleccion_Adicional.GetAllasync(x => x.Tipo_Eleccion_Id == TipoEleccionId && x.Paquete.Casilla.Municipio_Id == MunicipioId)).ToList();
 
                 }
 
@@ -206,14 +205,12 @@ namespace API_Computos_Publica.Controllers.Confguracion
                         var candidato = Candidatos_Unicos.FirstOrDefault(c => c.Candidato_Id == x.Id);
                         var candidatoAdicional = Candidatos_Unicos_Adicional.FirstOrDefault(c => c.Candidato_Id == x.Id);
                         var total_Votos_candidato = candidato?.Votos ?? 0 + candidatoAdicional?.Votos ?? 0;
-
+                        x.Porcentaje = total_Votos_candidato != null && total_Votos_candidato > 0 ? (decimal)total_Votos_candidato / Paquete.Sum(x => x.Total_Votos) + Paquete_adicional.Sum(x => x.Total_Votos) : 0;
                         x.Votos = total_Votos_candidato;
-                        x.Porcentaje = total_Votos_candidato != null ? (decimal)total_Votos_candidato / (Paquete.Sum(x => x.Total_Votos) + Paquete_adicional.Sum(x => x.Total_Votos)) : 0;
                         x.Fotografia_URL = x.Fotografia_URL != null ? x.Fotografia_URL.Replace("http", "https").Replace("Candidatos//", "Candidatos/") : null;
                         return x;
                     })
                     .ToList();
-
                 return Ok(new { success = true, data = Candidatos_DTO });
             }
             catch (Exception ex)
@@ -224,7 +221,7 @@ namespace API_Computos_Publica.Controllers.Confguracion
         }
 
         [HttpGet("ByTipoEleccion/{TipoEleccionId:int}")]
-        
+        [OutputCache(PolicyName = "consultas")]
         public async Task<IActionResult> ByTipoEleccion(int TipoEleccionId)
         {
             try
@@ -275,22 +272,13 @@ namespace API_Computos_Publica.Controllers.Confguracion
                 var Votos_Nulos = List_Elecciones.Contains(TipoEleccionId) ? (await _ctx.Paquete_Tipo_Eleccion.GetAllasync(x => List_Elecciones.Contains(x.Tipo_Eleccion_Id))).Sum(x => x.Votos_Nulos) : (await _ctx.Paquete_Tipo_Eleccion.GetAllasync(x => x.Tipo_Eleccion_Id == TipoEleccionId)).Sum(x => x.Votos_Nulos);
                 var Votos_Nulos_Adicional = List_Elecciones.Contains(TipoEleccionId) ? (await _ctx.Paquete_Tipo_Eleccion_Adicional.GetAllasync(x => List_Elecciones.Contains(x.Tipo_Eleccion_Id))).Sum(x => x.Votos_Nulos) : (await _ctx.Paquete_Tipo_Eleccion_Adicional.GetAllasync(x => x.Tipo_Eleccion_Id == TipoEleccionId)).Sum(x => x.Votos_Nulos);
 
-                
-             //foreach(var X in Candidatos_DTO)
-             //   {
-             //       var candidato = Candidatos_Unicos.FirstOrDefault(c => c.Candidato_Id == X.Id);
-             //       var candidatoAdicional = Candidatos_Unicos_Adicional.FirstOrDefault(c => c.Candidato_Id == X.Id);
-             //       var total_Votos_candidato = candidato?.Votos ?? 0 + candidatoAdicional?.Votos ?? 0;
-             //           X.Porcentaje = total_Votos_candidato != null ? (decimal)total_Votos_candidato / (Paquete.Sum(x => x.Total_Votos) + Paquete_adicional.Sum(x => x.Total_Votos)) : 0;
-             //   }
-
                 Candidatos_DTO = Candidatos_DTO
                     .Select(x =>
                     {
                         var candidato = Candidatos_Unicos.FirstOrDefault(c => c.Candidato_Id == x.Id);
                         var candidatoAdicional = Candidatos_Unicos_Adicional.FirstOrDefault(c => c.Candidato_Id == x.Id);
                         var total_Votos_candidato = candidato?.Votos ?? 0 + candidatoAdicional?.Votos ?? 0;
-
+                        x.Porcentaje = total_Votos_candidato != null && total_Votos_candidato > 0 ? (decimal) total_Votos_candidato / Paquete.Sum(x => x.Total_Votos) + Paquete_adicional.Sum(x => x.Total_Votos) : 0;
                         x.Votos = total_Votos_candidato;
                         x.Fotografia_URL = x.Fotografia_URL != null ? x.Fotografia_URL.Replace("http", "https").Replace("Candidatos//", "Candidatos/") : null;
                         return x;
@@ -307,7 +295,7 @@ namespace API_Computos_Publica.Controllers.Confguracion
         }
 
         [HttpGet("BySeccion/{SeccionId:int}/{TipoEleccionId:int}")]
-        
+        [OutputCache(PolicyName = "consultas")]
         public async Task<IActionResult> BySeccion(int SeccionId, int TipoEleccionId)
         {
             try
@@ -467,7 +455,7 @@ namespace API_Computos_Publica.Controllers.Confguracion
         }
 
         [HttpGet("BySeccionesMunicipio/{MunicipioId:int}/{TipoEleccionId:int}")]
-        
+        [OutputCache(PolicyName = "consultas")]
         public async Task<IActionResult> BySeccionesMunicipio(int MunicipioId, int TipoEleccionId)
         {
             try

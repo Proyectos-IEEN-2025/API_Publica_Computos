@@ -23,7 +23,7 @@ namespace API_Computos_Publica.Controllers.Computos
         private readonly IOutputCacheStore _outputCacheStore = outputCacheStore;
 
         [HttpGet("AvanceEstatal/{TipoEleccionId:int}")]
-        
+        [OutputCache(PolicyName = "consultas")]
         public async Task<IActionResult> AvanceEstatal(int TipoEleccionId)
         {
             try
@@ -98,7 +98,7 @@ namespace API_Computos_Publica.Controllers.Computos
         }
 
         [HttpGet("AvanceJAO/{TipoEleccionId:int}/{OficinaId:int}")]
-        
+        [OutputCache(PolicyName = "consultas")]
         public async Task<IActionResult> AvanceJAO(int TipoEleccionId, int OficinaId)
         {
             try
@@ -131,10 +131,10 @@ namespace API_Computos_Publica.Controllers.Computos
                 }
 
                 var Paquetes_Publicados = Paquetes_Eleccion.Select(x => x.Paquete_Id);
-                var Boletas = await _ctx.Boleta.GetAllasync(x => Paquetes_Publicados.Contains(x.Paquete_Id) && x.Tipo_Eleccion_Id == TipoEleccionId && x.Paquete.Casilla.Municipio.Region == Oficina.Municipio.Region && x.Adicional == false && x.Adicional_JAO == false && x.Fecha_Modificacion != null);
+                var Boletas = await _ctx.Boleta.GetAllasync(x => Paquetes_Publicados.Contains(x.Paquete_Id) && x.Tipo_Eleccion_Id == TipoEleccionId && x.Paquete.Casilla.Municipio.Region == Oficina.Municipio.Region && x.Adicional == false && x.Adicional_JAO == false && x.Fecha_Modificacion != null, include: source => source.Include(x => x.Paquete.Casilla.Municipio));
 
                 var Paquetes_Publicados_Adicional = Paquetes_Eleccion.Select(x => x.Paquete_Id);
-                var Boletas_Adicional = await _ctx.Boleta.GetAllasync(x => Paquetes_Publicados.Contains(x.Paquete_Id) && x.Tipo_Eleccion_Id == TipoEleccionId && x.Paquete.Casilla.Municipio.Region == Oficina.Municipio.Region && x.Adicional == false && x.Adicional_JAO == true && x.Fecha_Modificacion != null);
+                var Boletas_Adicional = await _ctx.Boleta.GetAllasync(x => Paquetes_Publicados.Contains(x.Paquete_Id) && x.Tipo_Eleccion_Id == TipoEleccionId && x.Paquete.Casilla.Municipio.Region == Oficina.Municipio.Region && (x.Adicional_JAO == true) && x.Fecha_Modificacion != null, include: source => source.Include(x => x.Paquete.Casilla.Municipio));
 
                 var Casillas = await _ctx.Casilla.GetAllasync(x => x.Municipio.Region == Oficina.Municipio.Region);
 
@@ -143,13 +143,17 @@ namespace API_Computos_Publica.Controllers.Computos
                 var Esperadas = Paquetes.Count();
                 var Avance = (decimal)Computadas / Esperadas;
 
-                var Participacion = List_Elecciones.Contains(TipoEleccionId) ? (Boletas.Where(x => List_Elecciones.Contains(x.Tipo_Eleccion_Id)).Count() / 4) : Boletas.Where(x => x.Tipo_Eleccion_Id == TipoEleccionId && x.Fecha_Modificacion != null).Count();
-                var ParticipacionAdicional = List_Elecciones.Contains(TipoEleccionId) ? (Boletas_Adicional.Where(x => List_Elecciones.Contains(x.Tipo_Eleccion_Id)).Count() / 4) : Boletas_Adicional.Where(x => x.Tipo_Eleccion_Id == TipoEleccionId && x.Fecha_Modificacion != null).Count();
+                var Participacion = Boletas.Where(x => x.Tipo_Eleccion_Id == TipoEleccionId && x.Fecha_Modificacion != null && x.Paquete.Casilla.Municipio.Region == Oficina.Municipio.Region).Count();
+
+                var ParticipacionAdicional = Boletas_Adicional.Where(x => x.Tipo_Eleccion_Id == TipoEleccionId && x.Fecha_Modificacion != null && x.Paquete.Casilla.Municipio.Region == Oficina.Municipio.Region).Count();
+
+                var Total_Participacion = Participacion + ParticipacionAdicional;
+                var Porc_Participion = (decimal)Total_Participacion / Casillas.Sum(x => x.Listado_Nominal);
 
                 var resultado = new Avance_DTO
                 {
                     Participacion = Participacion + ParticipacionAdicional,
-                    Porcentaje_Participacion = (decimal)((Participacion + ParticipacionAdicional) * 100) / Casillas.Sum(x => x.Listado_Nominal),
+                    Porcentaje_Participacion = Porc_Participion * 100,
                     Lista_Nominal = Casillas.Sum(x => x.Listado_Nominal),
                     Votos_Candidatura = Votos_Candidatura + Votos_Candidatos_Adicional,
                     Votos_Nulos = (Paquetes_Eleccion.Sum(x => x.Votos_Nulos) + Paquetes_Adicional.Sum(x => x.Votos_Nulos)),
@@ -170,7 +174,7 @@ namespace API_Computos_Publica.Controllers.Computos
         }
 
         [HttpGet("AvanceMunicipio/{TipoEleccionId:int}/{MunicipioId:int}")]
-        
+        [OutputCache(PolicyName = "consultas")]
         public async Task<IActionResult> AvanceMunicipio(int TipoEleccionId, int MunicipioId)
         {
             try
@@ -201,10 +205,10 @@ namespace API_Computos_Publica.Controllers.Computos
                 }
 
                 var Paquetes_Publicados = Paquetes_Eleccion.Select(x => x.Paquete_Id);
-                var Boletas = await _ctx.Boleta.GetAllasync(x => Paquetes_Publicados.Contains(x.Paquete_Id) && x.Tipo_Eleccion_Id == TipoEleccionId && x.Paquete.Casilla.Municipio_Id == MunicipioId && x.Adicional == false && x.Adicional_JAO == false && x.Fecha_Modificacion != null);
+                var Boletas = await _ctx.Boleta.GetAllasync(x => Paquetes_Publicados.Contains(x.Paquete_Id) && x.Tipo_Eleccion_Id == TipoEleccionId && x.Paquete.Casilla.Municipio_Id == MunicipioId && x.Adicional_JAO == false && x.Fecha_Modificacion != null, include: source => source.Include(x => x.Paquete.Casilla));
 
                 var Paquetes_Publicados_Adicional = Paquetes_Adicional.Select(x => x.Paquete_Id);
-                var Boletas_Adicional = await _ctx.Boleta.GetAllasync(x => Paquetes_Publicados.Contains(x.Paquete_Id) && x.Tipo_Eleccion_Id == TipoEleccionId && x.Paquete.Casilla.Municipio_Id == MunicipioId && x.Adicional == false && x.Adicional_JAO == false && x.Fecha_Modificacion != null);
+                var Boletas_Adicional = await _ctx.Boleta.GetAllasync(x => Paquetes_Publicados.Contains(x.Paquete_Id) && x.Tipo_Eleccion_Id == TipoEleccionId && x.Paquete.Casilla.Municipio_Id == MunicipioId &&  x.Adicional_JAO == true && x.Fecha_Modificacion != null, include: source => source.Include(x => x.Paquete.Casilla));
 
                 var Casillas = await _ctx.Casilla.GetAllasync(x => x.Municipio_Id == MunicipioId);
 
@@ -213,13 +217,17 @@ namespace API_Computos_Publica.Controllers.Computos
                 var Esperadas = Paquetes.Count();
                 var Avance = (decimal)Computadas / Esperadas;
 
-                var Participacion = List_Elecciones.Contains(TipoEleccionId) ? (Boletas.Where(x => List_Elecciones.Contains(x.Tipo_Eleccion_Id)).Count() / 4) : Boletas.Where(x => x.Tipo_Eleccion_Id == TipoEleccionId && x.Fecha_Modificacion != null).Count();
-                var ParticipacionAdicional = List_Elecciones.Contains(TipoEleccionId) ? (Boletas_Adicional.Where(x => List_Elecciones.Contains(x.Tipo_Eleccion_Id)).Count() / 4) : Boletas_Adicional.Where(x => x.Tipo_Eleccion_Id == TipoEleccionId && x.Fecha_Modificacion != null).Count();
+                var Participacion = Boletas.Where(x => x.Tipo_Eleccion_Id == TipoEleccionId && x.Fecha_Modificacion != null && x.Paquete.Casilla.Municipio_Id == MunicipioId).Count();
+                var ParticipacionAdicional = Boletas_Adicional.Where(x => x.Tipo_Eleccion_Id == TipoEleccionId && x.Fecha_Modificacion != null && x.Paquete.Casilla.Municipio_Id == MunicipioId).Count();
+
+
+                var Total_Participacion = Participacion + ParticipacionAdicional;
+                var Porc_Participion = (decimal)Total_Participacion / Casillas.Sum(x => x.Listado_Nominal);
 
                 var resultado = new Avance_DTO
                 {
                     Participacion = Participacion + ParticipacionAdicional,
-                    Porcentaje_Participacion = (decimal)((Participacion + ParticipacionAdicional) * 100) / Casillas.Sum(x => x.Listado_Nominal),
+                    Porcentaje_Participacion = Porc_Participion * 100,
                     Lista_Nominal = Casillas.Sum(x => x.Listado_Nominal),
                     Votos_Candidatura = Votos_Candidatura + Votos_Candidatos_Adicional,
                     Votos_Nulos = (Paquetes_Eleccion.Sum(x => x.Votos_Nulos) + Paquetes_Adicional.Sum(x => x.Votos_Nulos)),
