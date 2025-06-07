@@ -130,7 +130,7 @@ namespace API_Computos_Publica.Controllers.Confguracion
                     var candidato = Candidatos_Unicos.FirstOrDefault(c => c.Candidato_Id == x.Id);
                     var candidatoAdicional = Candidatos_Unicos_Adicional.FirstOrDefault(c => c.Candidato_Id == x.Id);
                     var total_Votos_candidato = candidato?.Votos ?? 0 + candidatoAdicional?.Votos ?? 0;
-                    x.Porcentaje = total_Votos_candidato != null && total_Votos_candidato > 0 ? (decimal)total_Votos_candidato / Paquete.Sum(x => x.Total_Votos) + Paquete_adicional.Sum(x => x.Total_Votos) : 0;
+                    x.Porcentaje = total_Votos_candidato != null && total_Votos_candidato > 0 ? (decimal)total_Votos_candidato /( Paquete.Sum(x => x.Total_Votos) + Paquete_adicional.Sum(x => x.Total_Votos)) : 0;
                     x.Votos = total_Votos_candidato;
                     x.Fotografia_URL = x.Fotografia_URL != null ? x.Fotografia_URL.Replace("http", "https").Replace("Candidatos//", "Candidatos/") : null;
                     return x;
@@ -205,7 +205,7 @@ namespace API_Computos_Publica.Controllers.Confguracion
                         var candidato = Candidatos_Unicos.FirstOrDefault(c => c.Candidato_Id == x.Id);
                         var candidatoAdicional = Candidatos_Unicos_Adicional.FirstOrDefault(c => c.Candidato_Id == x.Id);
                         var total_Votos_candidato = candidato?.Votos ?? 0 + candidatoAdicional?.Votos ?? 0;
-                        x.Porcentaje = total_Votos_candidato != null && total_Votos_candidato > 0 ? (decimal)total_Votos_candidato / Paquete.Sum(x => x.Total_Votos) + Paquete_adicional.Sum(x => x.Total_Votos) : 0;
+                        x.Porcentaje = total_Votos_candidato != null && total_Votos_candidato > 0 ? (decimal)total_Votos_candidato / (Paquete.Sum(x => x.Total_Votos) + Paquete_adicional.Sum(x => x.Total_Votos)) : 0;
                         x.Votos = total_Votos_candidato;
                         x.Fotografia_URL = x.Fotografia_URL != null ? x.Fotografia_URL.Replace("http", "https").Replace("Candidatos//", "Candidatos/") : null;
                         return x;
@@ -278,7 +278,7 @@ namespace API_Computos_Publica.Controllers.Confguracion
                         var candidato = Candidatos_Unicos.FirstOrDefault(c => c.Candidato_Id == x.Id);
                         var candidatoAdicional = Candidatos_Unicos_Adicional.FirstOrDefault(c => c.Candidato_Id == x.Id);
                         var total_Votos_candidato = candidato?.Votos ?? 0 + candidatoAdicional?.Votos ?? 0;
-                        x.Porcentaje = total_Votos_candidato != null && total_Votos_candidato > 0 ? (decimal) total_Votos_candidato / Paquete.Sum(x => x.Total_Votos) + Paquete_adicional.Sum(x => x.Total_Votos) : 0;
+                        x.Porcentaje = total_Votos_candidato != null && total_Votos_candidato > 0 ? (decimal) total_Votos_candidato / (Paquete.Sum(x => x.Total_Votos) + Paquete_adicional.Sum(x => x.Total_Votos)) : 0;
                         x.Votos = total_Votos_candidato;
                         x.Fotografia_URL = x.Fotografia_URL != null ? x.Fotografia_URL.Replace("http", "https").Replace("Candidatos//", "Candidatos/") : null;
                         return x;

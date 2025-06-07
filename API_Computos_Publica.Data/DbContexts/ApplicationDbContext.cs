@@ -56,7 +56,7 @@ namespace API_Computos_Publica.Data.DbContexts
             modelBuilder.Entity<Paquete_Tipo_Eleccion_Adicional>().HasQueryFilter(x => x.Publicado == true);
             modelBuilder.Entity<Candidatos_Tipo_Eleccion>().HasQueryFilter(x => x.Paquete_Tipo_Eleccion.Publicado == true);
             modelBuilder.Entity<Candidatos_Tipo_Eleccion_Adicional>().HasQueryFilter(x => x.Paquete_Tipo_Eleccion.Publicado == true);
-            modelBuilder.Entity<Boleta>().HasQueryFilter(x => x.Fecha_Modificacion != null);
+            modelBuilder.Entity<Boleta>().HasQueryFilter(x => x.Fecha_Modificacion != null && x.Eliminado == false);
             base.OnModelCreating(modelBuilder);
 
         }
